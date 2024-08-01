@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NASA APOD</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+  <input type="date" id="start-date">
+  <input type="date" id="end-date">
+  <button id="fetch-pictures" class="button-36" role="button">Fetch Pictures</button>
+    </div>
+  
+  <div id="apod-container"></div>
+  
+  <!-- Modal for displaying the large image -->
+  <div id="modal" class="modal">
+    <span id="modal-close" class="modal-close">&times;</span>
+    <img id="modal-img" src="" alt="">
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>
