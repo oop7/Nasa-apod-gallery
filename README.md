@@ -17,7 +17,7 @@ A web application that displays NASA's Astronomy Picture of the Day (APOD) image
 
  ## 🔽 Download
  
-You can download the most recent version of tool [here](https://codeload.github.com/oop7/nasa-apod-gallery/zip/refs/heads/main)
+You can download the most recent version of website [here](https://codeload.github.com/oop7/nasa-apod-gallery/zip/refs/heads/main)
 
 ## ⚙️ Setup and Installation
 
