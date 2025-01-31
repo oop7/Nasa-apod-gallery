@@ -47,7 +47,7 @@ A modern web application that displays NASA's Astronomy Picture of the Day (APOD
 ### Quick Start
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/nasa-apod-gallery.git
+git clone https://github.com/oop7/nasa-apod-gallery.git
 ```
 
 2. Open `index.html` in your browser
