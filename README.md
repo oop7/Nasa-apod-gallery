@@ -116,10 +116,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📧 Contact
 
-Your Name - [@yourusername](https://twitter.com/yourusername)
-
-Project Link: [https://github.com/yourusername/nasa-apod-gallery](https://github.com/yourusername/nasa-apod-gallery)
+Project Link: [https://github.com/oop7/nasa-apod-gallery](https://github.com/oop7/nasa-apod-gallery)
 
 ---
-Made with ❤️ by [Your Name]
+Made with ❤️ by [Muhamed]
 
