@@ -4,13 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NASA APOD</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-  <input type="date" id="start-date">
-  <input type="date" id="end-date">
-  <button id="fetch-pictures" class="button-36" role="button">Fetch Pictures</button>
+      <input type="date" id="start-date">
+      <input type="date" id="end-date">
+      <button id="fetch-pictures" class="button-36" role="button">Fetch Pictures</button>
+      <button id="clear-results" class="button-36" role="button">Clear Results</button>
+      <div id="error-message" class="error-message"></div>
+      <div id="loading" class="loading">Loading...</div>
     </div>
   
   <div id="apod-container"></div>
@@ -20,6 +24,10 @@
     <span id="modal-close" class="modal-close">&times;</span>
     <img id="modal-img" src="" alt="">
   </div>
+  
+  <footer>
+    <p>Powered by NASA's APOD API | &copy; 2023 NASA APOD Viewer</p>
+  </footer>
   
   <script src="script.js"></script>
 </body>
