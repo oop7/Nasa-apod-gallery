@@ -119,5 +119,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 Project Link: [https://github.com/oop7/nasa-apod-gallery](https://github.com/oop7/nasa-apod-gallery)
 
 ---
-Made with ❤️ by [Muhamed]
+Made with ❤️ by oop7
 
