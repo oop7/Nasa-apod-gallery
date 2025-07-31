@@ -42,7 +42,7 @@ A modern web application that displays NASA's Astronomy Picture of the Day (APOD
 ### Prerequisites
 - Modern web browser (Chrome, Firefox, Safari, Edge)
 - Internet connection
-- NASA API key (optional)
+- NASA API key
 
 ### Quick Start
 1. Clone the repository:
