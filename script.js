@@ -1,5 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const apiKey = '{{NASA_API_KEY}}'; // Your NASA API key
+    // Register Service Worker for PWA functionality
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then((registration) => {
+                    console.log('SW registered: ', registration);
+                })
+                .catch((registrationError) => {
+                    console.log('SW registration failed: ', registrationError);
+                });
+        });
+    }
+
+    // API Key configuration for GitHub deployment with fallback
+    const apiKey = window.NASA_API_KEY || 'DEMO_KEY'; // Will use GitHub Pages injected variable or demo key
     const apodContainer = document.getElementById('apod-container');
     const fetchButton = document.getElementById('fetch-pictures');
     const modal = document.getElementById('modal');
@@ -9,11 +23,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorMessage = document.getElementById('error-message');
     const loading = document.getElementById('loading');
     const clearButton = document.getElementById('clear-results');
+    const showFavoritesButton = document.getElementById('show-favorites');
+    const searchInput = document.getElementById('search-input');
   
     // New features
     let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
     let currentPage = 1;
     let isLoading = false;
+    let allImages = []; // Store all fetched images for search
+    let isShowingFavorites = false;
     
     // Initialize date inputs with current date and last month
     const today = new Date();
@@ -22,6 +40,70 @@ document.addEventListener('DOMContentLoaded', () => {
     
     document.getElementById('end-date').value = today.toISOString().split('T')[0];
     document.getElementById('start-date').value = lastMonth.toISOString().split('T')[0];
+
+    // Search functionality
+    searchInput.addEventListener('input', debounce(filterImages, 300));
+
+    // Show favorites functionality
+    showFavoritesButton.addEventListener('click', () => {
+        if (isShowingFavorites) {
+            displayAllImages();
+            showFavoritesButton.textContent = 'Show Favorites';
+            isShowingFavorites = false;
+        } else {
+            displayFavorites();
+            showFavoritesButton.textContent = 'Show All';
+            isShowingFavorites = true;
+        }
+    });
+
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    function filterImages() {
+        const searchTerm = searchInput.value.toLowerCase();
+        if (!searchTerm) {
+            displayAllImages();
+            return;
+        }
+
+        const filteredImages = allImages.filter(item => 
+            item.title.toLowerCase().includes(searchTerm) ||
+            item.explanation.toLowerCase().includes(searchTerm)
+        );
+
+        displayImages(filteredImages);
+    }
+
+    function displayImages(images) {
+        apodContainer.innerHTML = '';
+        images.forEach(item => {
+            const apodItem = createImageCard(item);
+            apodContainer.appendChild(apodItem);
+        });
+    }
+
+    function displayAllImages() {
+        displayImages(allImages);
+    }
+
+    function displayFavorites() {
+        const favoriteImages = allImages.filter(item => favorites.includes(item.url));
+        if (favoriteImages.length === 0) {
+            apodContainer.innerHTML = '<div class="no-favorites">No favorite images yet. Click the heart icon on images to add them to favorites!</div>';
+        } else {
+            displayImages(favoriteImages);
+        }
+    }
 
     // Infinite scroll
     window.addEventListener('scroll', () => {
@@ -43,6 +125,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Enhanced image card creation
     function createImageCard(item) {
+        // Skip non-image media types
+        if (item.media_type !== 'image') {
+            return createVideoCard(item);
+        }
+
         const apodItem = document.createElement('div');
         apodItem.className = 'apod-item';
         
@@ -50,16 +137,16 @@ document.addEventListener('DOMContentLoaded', () => {
         
         apodItem.innerHTML = `
             <div class="image-container">
-                <img src="${item.url}" alt="${item.title}" loading="lazy">
+                <img src="${item.url}" alt="${item.title}" loading="lazy" onerror="handleImageError(this)" tabindex="0" role="img" aria-label="${item.title}">
                 <div class="image-overlay">
-                    <button class="action-btn favorite-btn ${isFavorite ? 'active' : ''}" title="Add to favorites">
-                        <i class="fas fa-heart"></i>
+                    <button class="action-btn favorite-btn ${isFavorite ? 'active' : ''}" title="Add to favorites" aria-label="Add ${item.title} to favorites">
+                        <i class="fas fa-heart" aria-hidden="true"></i>
                     </button>
-                    <button class="action-btn share-btn" title="Share">
-                        <i class="fas fa-share-alt"></i>
+                    <button class="action-btn share-btn" title="Share" aria-label="Share ${item.title}">
+                        <i class="fas fa-share-alt" aria-hidden="true"></i>
                     </button>
-                    <button class="action-btn download-btn" title="Download">
-                        <i class="fas fa-download"></i>
+                    <button class="action-btn download-btn" title="Download" aria-label="Download ${item.title}">
+                        <i class="fas fa-download" aria-hidden="true"></i>
                     </button>
                 </div>
             </div>
@@ -86,8 +173,87 @@ document.addEventListener('DOMContentLoaded', () => {
         // Double click for modal
         apodItem.addEventListener('dblclick', () => showModal(item));
 
+        // Keyboard navigation for image
+        const img = apodItem.querySelector('img');
+        img.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                showModal(item);
+            }
+        });
+
         return apodItem;
     }
+
+    // Handle video content
+    function createVideoCard(item) {
+        const apodItem = document.createElement('div');
+        apodItem.className = 'apod-item video-item';
+        
+        apodItem.innerHTML = `
+            <div class="video-container">
+                <div class="video-placeholder">
+                    <i class="fas fa-play-circle"></i>
+                    <p>Video Content</p>
+                </div>
+                <div class="image-overlay">
+                    <button class="action-btn view-btn" title="View Video">
+                        <i class="fas fa-external-link-alt"></i>
+                    </button>
+                    <button class="action-btn share-btn" title="Share">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="content">
+                <h2>${item.title}</h2>
+                <p class="date">${new Date(item.date).toLocaleDateString()}</p>
+                <p class="description">${item.explanation}</p>
+                <div class="tags">
+                    ${generateTags(item.title)}
+                </div>
+            </div>
+        `;
+
+        const viewBtn = apodItem.querySelector('.view-btn');
+        viewBtn.addEventListener('click', () => window.open(item.url, '_blank'));
+
+        const shareBtn = apodItem.querySelector('.share-btn');
+        shareBtn.addEventListener('click', () => shareImage(item));
+
+        return apodItem;
+    }
+
+    // Handle image loading errors
+    window.handleImageError = function(img) {
+        img.style.display = 'none';
+        const container = img.parentElement;
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'image-error';
+        errorDiv.innerHTML = `
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>Image failed to load</p>
+            <button onclick="retryImageLoad(this)" class="retry-btn">Retry</button>
+        `;
+        container.appendChild(errorDiv);
+    };
+
+    // Retry loading failed images
+    window.retryImageLoad = function(btn) {
+        const container = btn.closest('.image-container');
+        const img = container.querySelector('img');
+        const errorDiv = container.querySelector('.image-error');
+        
+        errorDiv.remove();
+        img.style.display = 'block';
+        
+        // Force reload by changing src
+        const originalSrc = img.src;
+        img.src = '';
+        setTimeout(() => {
+            img.src = originalSrc + '?retry=' + Date.now();
+        }, 100);
+    };
 
     // Utility functions
     function generateTags(title) {
@@ -168,6 +334,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => toast.remove(), 300);
             }, 2000);
         }, 100);
+    }
+
+    // Performance optimization: Lazy loading setup
+    function setupLazyLoading() {
+        const images = document.querySelectorAll('img[loading="lazy"]');
+        
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        if (!img.src) {
+                            img.src = img.dataset.src;
+                        }
+                        img.classList.remove('lazy');
+                        imageObserver.unobserve(img);
+                    }
+                });
+            });
+
+            images.forEach(img => imageObserver.observe(img));
+        }
     }
 
     // Keyboard navigation
@@ -260,9 +448,16 @@ document.addEventListener('DOMContentLoaded', () => {
             data = [data];
           }
           data.forEach(item => {
+            // Store all images for search functionality
+            if (!allImages.find(img => img.url === item.url)) {
+              allImages.push(item);
+            }
             const apodItem = createImageCard(item);
             apodContainer.appendChild(apodItem);
           });
+          
+          // Setup lazy loading observer
+          setupLazyLoading();
         })
         .catch(error => {
           loading.style.display = 'none';
@@ -274,6 +469,63 @@ document.addEventListener('DOMContentLoaded', () => {
     function showModal(item) {
       modal.style.display = 'flex';
       modalImg.src = item.url;
+      modalImg.alt = item.title;
+      
+      // Add image metadata
+      const existingInfo = modal.querySelector('.modal-info');
+      if (existingInfo) existingInfo.remove();
+      
+      const modalInfo = document.createElement('div');
+      modalInfo.className = 'modal-info';
+      modalInfo.innerHTML = `
+        <h3>${item.title}</h3>
+        <p class="modal-date">${new Date(item.date).toLocaleDateString()}</p>
+        <div class="modal-controls">
+          <button class="modal-btn zoom-in" title="Zoom In" aria-label="Zoom in">
+            <i class="fas fa-search-plus"></i>
+          </button>
+          <button class="modal-btn zoom-out" title="Zoom Out" aria-label="Zoom out">
+            <i class="fas fa-search-minus"></i>
+          </button>
+          <button class="modal-btn reset-zoom" title="Reset Zoom" aria-label="Reset zoom">
+            <i class="fas fa-expand-arrows-alt"></i>
+          </button>
+        </div>
+      `;
+      
+      modal.appendChild(modalInfo);
+      
+      // Add zoom functionality
+      let currentZoom = 1;
+      const zoomIn = modalInfo.querySelector('.zoom-in');
+      const zoomOut = modalInfo.querySelector('.zoom-out');
+      const resetZoom = modalInfo.querySelector('.reset-zoom');
+      
+      zoomIn.addEventListener('click', () => {
+        currentZoom = Math.min(currentZoom * 1.2, 3);
+        modalImg.style.transform = `scale(${currentZoom})`;
+      });
+      
+      zoomOut.addEventListener('click', () => {
+        currentZoom = Math.max(currentZoom / 1.2, 0.5);
+        modalImg.style.transform = `scale(${currentZoom})`;
+      });
+      
+      resetZoom.addEventListener('click', () => {
+        currentZoom = 1;
+        modalImg.style.transform = 'scale(1)';
+      });
+      
+      // Reset zoom when modal closes
+      const resetOnClose = () => {
+        currentZoom = 1;
+        modalImg.style.transform = 'scale(1)';
+      };
+      
+      modalClose.addEventListener('click', resetOnClose);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) resetOnClose();
+      });
     }
   
     modalClose.addEventListener('click', () => {
