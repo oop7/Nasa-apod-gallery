@@ -3,16 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NASA APOD</title>
+  <title>NASA APOD Gallery</title>
+  <meta name="description" content="Browse NASA's Astronomy Picture of the Day collection with an elegant, modern interface">
+  <meta name="theme-color" content="#4299e1">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Cpath fill='%234299e1' d='M96 8C43 8 8 43 8 96s35 88 88 88 88-35 88-88S149 8 96 8zm0 144c-31 0-56-25-56-56s25-56 56-56 56 25 56 56-25 56-56 56z'/%3E%3C/svg%3E">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="APOD Gallery">
+  
+  <!-- External Resources -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-      <input type="date" id="start-date">
-      <input type="date" id="end-date">
-      <button id="fetch-pictures" class="button-36" role="button">Fetch Pictures</button>
-      <button id="clear-results" class="button-36" role="button">Clear Results</button>
+      <div class="search-controls">
+        <input type="text" id="search-input" placeholder="Search images by title or description..." class="search-input">
+        <div class="date-controls">
+          <input type="date" id="start-date">
+          <input type="date" id="end-date">
+        </div>
+        <div class="action-buttons">
+          <button id="fetch-pictures" class="button-36" role="button">Fetch Pictures</button>
+          <button id="clear-results" class="button-36" role="button">Clear Results</button>
+          <button id="show-favorites" class="button-36" role="button">Show Favorites</button>
+        </div>
+      </div>
       <div id="error-message" class="error-message"></div>
       <div id="loading" class="loading">Loading...</div>
     </div>
