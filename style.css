@@ -571,17 +571,6 @@ img:focus {
     outline-offset: 3px;
 }
 
-/* High contrast mode support - using more compatible approach */
-@media screen and (-ms-high-contrast: active), screen and (-ms-high-contrast: black-on-white) {
-    .button-36 {
-        border: 2px solid currentColor;
-    }
-    
-    .action-btn {
-        border: 1px solid currentColor;
-    }
-}
-
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
     * {
