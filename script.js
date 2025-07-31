@@ -26,15 +26,19 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('🔑 Using DEMO_KEY - Rate limited to 30 requests/hour');
         console.log('💡 Get your free API key at https://api.nasa.gov/ for unlimited access');
         console.log('ℹ️ Or add your API key as NASA_API_KEY in GitHub repository secrets');
+        // Show the API notice for demo users
+        document.querySelector('.api-notice').style.display = 'block';
     } else {
         console.log('🔑 Using custom NASA API key - Unlimited access ✅');
+        // Hide the API notice for users with their own key
+        document.querySelector('.api-notice').style.display = 'none';
     }
     const apodContainer = document.getElementById('apod-container');
     const fetchButton = document.getElementById('fetch-pictures');
     const modal = document.getElementById('modal');
     const modalImg = document.getElementById('modal-img');
     const modalClose = document.getElementById('modal-close');
-    const batchSize = 5; // Number of requests to handle concurrently
+    const batchSize = 3; // Number of days per request - reduced to avoid rate limits
     const errorMessage = document.getElementById('error-message');
     const loading = document.getElementById('loading');
     const clearButton = document.getElementById('clear-results');
@@ -416,19 +420,27 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Reset the images array when fetching new data
       allImages = [];
+      
+      // Update loading message to show progress
+      loading.innerHTML = `Loading images... (0/${dateChunks.length} batches complete)<br><small>⏳ NASA API has rate limits - please wait between requests</small>`;
+      loading.style.display = 'block';
   
       function fetchNextBatch(index) {
         if (index >= dateChunks.length) {
           isLoading = false;
+          loading.style.display = 'none';
           return;
         }
         
         isLoading = true;
         const dateRange = dateChunks[index];
         
+        // Update progress
+        loading.innerHTML = `Loading images... (${index}/${dateChunks.length} batches complete)<br><small>⏳ Fetching ${dateRange.start} to ${dateRange.end}...</small>`;
+        
         fetchPictures(dateRange.start, dateRange.end).finally(() => {
-          // Increase delay to respect rate limits
-          setTimeout(() => fetchNextBatch(index + 1), 1500); // Increased from 500ms to 1500ms
+          // Increase delay to respect NASA's rate limits (3-5 seconds recommended)
+          setTimeout(() => fetchNextBatch(index + 1), 4000); // Increased to 4 seconds
         });
       }
   
@@ -455,7 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return dateChunks;
     }
   
-    function fetchPictures(startDate, endDate) {
+    function fetchPictures(startDate, endDate, retryCount = 0) {
       const apiUrl = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&start_date=${startDate}&end_date=${endDate}`;
       console.log('Fetching pictures from:', apiUrl);
   
@@ -463,7 +475,8 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => {
           if (!response.ok) {
             if (response.status === 429) {
-              throw new Error('Rate limit exceeded. Please wait a moment and try again, or add your own NASA API key.');
+              // Rate limited - throw error with retry suggestion
+              throw new Error(`Rate limit exceeded for dates ${startDate} to ${endDate}. NASA API allows 1000 requests/hour with burst protection. Try smaller date ranges or wait longer between requests.`);
             } else if (response.status === 403) {
               throw new Error('Invalid API key. Please check your NASA API key.');
             } else {
@@ -473,7 +486,6 @@ document.addEventListener('DOMContentLoaded', () => {
           return response.json();
         })
         .then(data => {
-          loading.style.display = 'none';
           console.log('Fetched data:', data);
           if (!Array.isArray(data)) {
             data = [data];
@@ -491,11 +503,10 @@ document.addEventListener('DOMContentLoaded', () => {
           setupLazyLoading();
         })
         .catch(error => {
-          loading.style.display = 'none';
           let errorMsg = 'Error fetching data. Please try again later.';
           
           if (error.message.includes('Rate limit')) {
-            errorMsg = 'Rate limit exceeded. Please wait a moment before trying again. Consider getting your own NASA API key for unlimited access.';
+            errorMsg = `⚠️ ${error.message} Try reducing your date range or waiting longer between requests.`;
           } else if (error.message.includes('Invalid API key')) {
             errorMsg = 'Invalid API key. Please check your NASA API key configuration.';
           }
