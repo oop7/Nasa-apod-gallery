@@ -60,7 +60,7 @@ The project uses NASA's APOD API. While the default API key works, you can repla
 2. Open `script.js`
 3. Replace the API key:
 ```javascript
-const apiKey = 'GV79mC0zansrxxmlzORH9et1G4D7R6kbhgOOsrQw';
+const apiKey = 'GV79mC0zansrxxmlzORH9et1G4D7R6kbhgOOsmQw';
 ```
 
 ## 📱 Usage Guide
