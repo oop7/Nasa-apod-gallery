@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const apiKey = 'GW79mC0zansrxxmlzORH5et1G4D7R6kbhgOOsrQw'; // Your NASA API key
+    const apiKey = '{{NASA_API_KEY}}'; // Your NASA API key
     const apodContainer = document.getElementById('apod-container');
     const fetchButton = document.getElementById('fetch-pictures');
     const modal = document.getElementById('modal');
