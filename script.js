@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Register Service Worker for PWA functionality
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
+            navigator.serviceWorker.register('./sw.js')
                 .then((registration) => {
                     console.log('SW registered: ', registration);
                 })
@@ -14,6 +14,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // API Key configuration for GitHub deployment with fallback
     const apiKey = window.NASA_API_KEY || 'DEMO_KEY'; // Will use GitHub Pages injected variable or demo key
+    
+    // Debug: Log API key status (without exposing the actual key)
+    if (apiKey === 'DEMO_KEY') {
+        console.log('🔑 Using DEMO_KEY - Rate limited to 30 requests/hour');
+        console.log('💡 Get your free API key at https://api.nasa.gov/ for unlimited access');
+    } else {
+        console.log('🔑 Using custom NASA API key - Unlimited access ✅');
+    }
     const apodContainer = document.getElementById('apod-container');
     const fetchButton = document.getElementById('fetch-pictures');
     const modal = document.getElementById('modal');
@@ -398,12 +406,22 @@ document.addEventListener('DOMContentLoaded', () => {
     function fetchPicturesInChunks(startDate, endDate) {
       const dateChunks = getDateChunks(startDate, endDate, batchSize);
       apodContainer.innerHTML = ''; // Clear existing content
+      
+      // Reset the images array when fetching new data
+      allImages = [];
   
       function fetchNextBatch(index) {
-        if (index >= dateChunks.length) return; // Stop if all chunks are processed
+        if (index >= dateChunks.length) {
+          isLoading = false;
+          return;
+        }
+        
+        isLoading = true;
         const dateRange = dateChunks[index];
+        
         fetchPictures(dateRange.start, dateRange.end).finally(() => {
-          setTimeout(() => fetchNextBatch(index + 1), 500); // Add a delay between batches
+          // Increase delay to respect rate limits
+          setTimeout(() => fetchNextBatch(index + 1), 1500); // Increased from 500ms to 1500ms
         });
       }
   
@@ -437,7 +455,13 @@ document.addEventListener('DOMContentLoaded', () => {
       return fetch(apiUrl)
         .then(response => {
           if (!response.ok) {
-            throw new Error(`Network response was not ok: ${response.statusText}`);
+            if (response.status === 429) {
+              throw new Error('Rate limit exceeded. Please wait a moment and try again, or add your own NASA API key.');
+            } else if (response.status === 403) {
+              throw new Error('Invalid API key. Please check your NASA API key.');
+            } else {
+              throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
           }
           return response.json();
         })
@@ -461,7 +485,15 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => {
           loading.style.display = 'none';
-          showError('Error fetching data. Please try again later.');
+          let errorMsg = 'Error fetching data. Please try again later.';
+          
+          if (error.message.includes('Rate limit')) {
+            errorMsg = 'Rate limit exceeded. Please wait a moment before trying again. Consider getting your own NASA API key for unlimited access.';
+          } else if (error.message.includes('Invalid API key')) {
+            errorMsg = 'Invalid API key. Please check your NASA API key configuration.';
+          }
+          
+          showError(errorMsg);
           console.error('Error fetching data from NASA API:', error);
         });
     }

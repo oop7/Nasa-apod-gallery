@@ -1,10 +1,11 @@
 // Service Worker for NASA APOD Gallery
-const CACHE_NAME = 'nasa-apod-cache-v1';
+const CACHE_NAME = 'nasa-apod-cache-v2';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/script.js',
+  './',
+  './index.html',
+  './style.css',
+  './script.js',
+  './manifest.json',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'
 ];
 

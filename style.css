@@ -426,6 +426,27 @@ footer p {
     transform: scale(1.05);
 }
 
+/* API Notice */
+.api-notice {
+    background: linear-gradient(135deg, #fef5e7 0%, #fdf2e9 100%);
+    border: 1px solid #f6ad55;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #744210;
+}
+
+.api-notice a {
+    color: #c05621;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.api-notice a:hover {
+    text-decoration: underline;
+}
+
 /* Search Controls */
 .search-controls {
     display: flex;
