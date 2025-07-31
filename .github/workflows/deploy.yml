@@ -36,12 +36,13 @@ jobs:
     - name: Inject API Key
       run: |
         echo "Before injection:"
-        grep "NASA_API_KEY" script.js || echo "Pattern not found"
+        cat script.js | grep -n "NASA_API_KEY"
         if [ -n "${{ secrets.NASA_API_KEY }}" ]; then
-          sed -i "s/window\.NASA_API_KEY || 'DEMO_KEY'/'${{ secrets.NASA_API_KEY }}'/g" script.js
+          # Replace the entire apiKey line
+          sed -i "s/const apiKey = window\.NASA_API_KEY || 'DEMO_KEY';/const apiKey = '${{ secrets.NASA_API_KEY }}';/g" script.js
           echo "API key injected successfully"
           echo "After injection:"
-          grep "apiKey" script.js | head -1
+          cat script.js | grep -n "const apiKey"
         else
           echo "No NASA_API_KEY secret found, using DEMO_KEY"
         fi

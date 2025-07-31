@@ -2,12 +2,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Register Service Worker for PWA functionality
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
+            // Get the correct path for GitHub Pages
+            const swPath = window.location.pathname.endsWith('/') ? 
+                window.location.pathname + 'sw.js' : 
+                window.location.pathname + '/sw.js';
+            
+            navigator.serviceWorker.register(swPath)
                 .then((registration) => {
                     console.log('SW registered: ', registration);
                 })
                 .catch((registrationError) => {
                     console.log('SW registration failed: ', registrationError);
+                    // Don't let SW failure break the app
                 });
         });
     }
@@ -19,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (apiKey === 'DEMO_KEY') {
         console.log('🔑 Using DEMO_KEY - Rate limited to 30 requests/hour');
         console.log('💡 Get your free API key at https://api.nasa.gov/ for unlimited access');
+        console.log('ℹ️ Or add your API key as NASA_API_KEY in GitHub repository secrets');
     } else {
         console.log('🔑 Using custom NASA API key - Unlimited access ✅');
     }
