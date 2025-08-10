@@ -1,127 +1,157 @@
-# 🌌 NASA APOD Viewer
+# NASA APOD Explorer
 
-A modern web application that displays NASA's Astronomy Picture of the Day (APOD) images with an elegant interface and rich features. Browse through the cosmos with our intuitive gallery viewer!
+A sleek, modern, and responsive web app to explore NASA’s Astronomy Picture of the Day (APOD). Built with React, Vite, TypeScript, Tailwind CSS, and shadcn/ui. Features a beautiful in-app media viewer (no new windows), light/dark theme, favorites, and basic offline support.
 
-![NASA APOD Viewer Demo](demo.gif)
+![Hero](src/assets/hero-nebula.jpg)
 
-## ✨ Features
+## Features
+- Daily APOD with title, explanation, and HD media
+- In-app media viewer modal with zoom and download (no popups)
+- Light/Dark theme toggle (persistent)
+- Date browsing via date picker and range gallery
+- Favorites stored in localStorage
+- “Surprise me” random APOD
+- Basic offline caching via service worker
+- Accessible, responsive, and keyboard-friendly UI
 
-### Core Features
-- 🖼️ Fetch and display NASA's Astronomy Picture of the Day (APOD) images
-- 📅 Select custom date ranges to view images from specific periods
-- 🔍 View images in full screen with double-click
-- 📱 Responsive and mobile-friendly design
+## Tech Stack
+- React 18 + Vite + TypeScript
+- Tailwind CSS + shadcn/ui
+- @tanstack/react-query for data fetching/cache
+- NASA APOD API (https://api.nasa.gov/planetary/apod)
 
-### Enhanced Features
-- ♾️ Infinite scroll for seamless browsing
-- ❤️ Save favorite images locally
-- 🔄 Share images on social media
-- ⬇️ Download images directly
-- 🏷️ Auto-generated image tags
-- 🌓 Dark mode support
-- 🔔 Toast notifications for user feedback
-- 📊 Loading state indicators
-- ⚡ Lazy loading for better performance
+## Live Demo
+You can publish this project to GitHub Pages (instructions below). If deployed, add your live link here:
+- Live: https://<your-username>.github.io/<your-repo>/
 
-## 🛠️ Technologies Used
-
-- HTML5
-- CSS3 with Modern Features
-  - Flexbox & Grid
-  - CSS Variables
-  - Animations & Transitions
-- JavaScript (ES6+)
-  - Async/Await
-  - Local Storage
-  - Intersection Observer
-- NASA APOD API
-- Font Awesome Icons
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
-- Modern web browser (Chrome, Firefox, Safari, Edge)
-- Internet connection
-- NASA API key (optional)
+- Node.js 18+ and npm
 
-### Quick Start
-1. Clone the repository:
+### Installation
 ```bash
-git clone https://github.com/oop7/nasa-apod-gallery.git
+npm install
+npm run dev
+```
+Then open http://localhost:5173
+
+### NASA API Key (optional)
+- The app works out-of-the-box with NASA’s DEMO_KEY (rate-limited).
+- To use your own key, click the Settings (gear) icon in the header and paste your API key. It’s stored locally and used for subsequent requests.
+- Get a key: https://api.nasa.gov/
+
+## Scripts
+```bash
+# Start dev server
+npm run dev
+
+# Build for production (output in dist)
+npm run build
+
+# Preview the production build locally
+npm run preview
 ```
 
-2. Open `index.html` in your browser
-3. Start exploring the cosmos! 🌠
-
-### API Configuration
-The project uses NASA's APOD API. While the default API key works, you can replace it with your own:
-
-1. Get your API key from [NASA API Portal](https://api.nasa.gov/)
-2. Open `script.js`
-3. Replace the API key:
-```javascript
-<<<<<<< HEAD
-const apiKey = 'GW79mC0zansrxxmlzORH5et1G4D7R6kbhgOOsrQw';
-=======
-const apiKey = 'GV79mC0zansrxxmlzORH9et1G4D7R6kbhgOOsmQw';
->>>>>>> f781b6552fbf56b131ff2be6f5df6de6f42cf214
+## Project Structure
+```
+/
+├── index.html
+├── public/
+│   └── sw.js                 # Service worker for basic offline caching
+├── src/
+│   ├── assets/
+│   │   └── hero-nebula.jpg
+│   ├── components/
+│   │   ├── Header.tsx
+│   │   └── apod/
+│   │       ├── ApodHero.tsx
+│   │       ├── ApodGallery.tsx
+│   │       ├── ApodCard.tsx
+│   │       └── DatePicker.tsx
+│   ├── lib/
+│   │   └── apod.ts           # API helpers + API key management (localStorage)
+│   ├── pages/
+│   │   ├── Index.tsx
+│   │   └── NotFound.tsx
+│   ├── index.css             # Design tokens & theme
+│   ├── main.tsx              # App entry
+│   └── App.tsx               # Providers & routes
+├── tailwind.config.ts
+└── vite.config.ts
 ```
 
-## 📱 Usage Guide
+## Deployment (GitHub Pages)
+There are two common approaches. For both, set Vite base if deploying to a project repo (not user/organization site).
 
-### Viewing Images
-1. Select a date range using the date pickers
-2. Click "Fetch Pictures" to load images
-3. Scroll through the gallery
-4. Double-click any image for full-screen view
-
-### Image Actions
-- ❤️ Click heart icon to save to favorites
-- 📤 Use share button for social media sharing
-- ⬇️ Download images directly to your device
-
-### Navigation
-- 🖱️ Scroll down for infinite loading
-- ⌨️ Use ESC key to exit full-screen view
-- 🔄 Clear results with the clear button
-
-## 🎨 Customization
-
-### Color Scheme
-The app supports both light and dark modes, automatically matching your system preferences. To modify the color scheme, edit the CSS variables in `style.css`:
-
-```css
-:root {
-    --primary-color: #4299e1;
-    --background-color: #f6f9fc;
-    /* ... other variables */
-}
+1) Configure Vite base path (if needed)
+- In vite.config.ts, set base to your repo name:
+```ts
+export default defineConfig({
+  base: "/<REPO_NAME>/",
+  // ...rest of config
+});
 ```
 
-## 🤝 Contributing
+2) Deploy with GitHub Actions (recommended)
+- Create .github/workflows/deploy.yml with a Pages workflow, for example:
+```yml
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+```
+- In your repo: Settings → Pages → Source: GitHub Actions.
 
-Contributions are welcome! Here's how you can help:
+3) Manual gh-pages branch (alternative)
+- Build locally: `npm run build`
+- Push the contents of dist/ to a gh-pages branch and enable Pages from that branch.
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/AmazingFeature`
-3. Commit changes: `git commit -m 'Add AmazingFeature'`
-4. Push to branch: `git push origin feature/AmazingFeature`
-5. Open a Pull Request
+## Accessibility
+- Semantic HTML, labeled controls, aria-attributes for dialogs
+- Keyboard navigation for key interactions
+- High-contrast theming with Tailwind semantic tokens
 
-## 📝 License
+## Privacy & Data
+- No server-side storage. Favorites and API key live in your browser’s localStorage.
+- NASA content courtesy of the APOD API. Respect their usage policies.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## Contributing
+Issues and PRs are welcome! Please:
+- Use descriptive titles and follow conventional commits when possible
+- Keep PRs focused and small
+- Adhere to existing code style
 
-## 🙏 Acknowledgments
+## License
+MIT ©oop7. See LICENSE if you add one.
 
-- NASA for providing the APOD API
-- [Font Awesome](https://fontawesome.com/) for icons
-- All contributors and users of this project
-
-## 📧 Contact
-
-Project Link: [https://github.com/oop7/nasa-apod-gallery](https://github.com/oop7/nasa-apod-gallery)
-
----
-Made with ❤️ by oop7
-
+## Acknowledgements
+- NASA APOD: https://apod.nasa.gov/
+- Icons: lucide-react
+- UI: shadcn/ui + Radix Primitives
