@@ -131,7 +131,7 @@ Issues and PRs are welcome! Please:
 - Adhere to existing code style
 
 ## License
-MIT © Your Name. See LICENSE if you add one.
+MIT © oop7. See LICENSE if you add one.
 
 ## Acknowledgements
 - NASA APOD: https://apod.nasa.gov/
