@@ -24,6 +24,29 @@ export const ApodGallery = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Re-fetch gallery when API key changes
+  useEffect(() => {
+    const handler = async () => {
+      setLoading(true);
+      try {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(start.getDate() - (BATCH_DAYS - 1));
+        const batch = await fetchRange(toISO(start), toISO(end));
+        setItems(batch);
+        start.setDate(start.getDate() - 1);
+        setCursor(start);
+      } catch (e) {
+        const random = await fetchRandom(BATCH_DAYS);
+        setItems(random);
+      } finally {
+        setLoading(false);
+      }
+    };
+    window.addEventListener('apod:apiKeyChanged', handler as EventListener);
+    return () => window.removeEventListener('apod:apiKeyChanged', handler as EventListener);
+  }, []);
+
   const loadMore = async () => {
     if (loading) return;
     setLoading(true);

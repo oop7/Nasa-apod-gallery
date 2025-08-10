@@ -29,6 +29,31 @@ export const ApodHero = ({ onRandom }: ApodHeroProps) => {
     return () => { active = false; };
   }, [date]);
 
+  // Re-fetch current date when API key changes (no full page refresh needed)
+  useEffect(() => {
+    const handler = () => {
+      setItem(null);
+      fetchApodByDate(toISO(date))
+        .then((data) => setItem(data))
+        .catch(() => toast({ title: 'Failed to load APOD', description: 'Please try another date or set your API key.' }));
+    };
+    window.addEventListener('apod:apiKeyChanged', handler as EventListener);
+    return () => window.removeEventListener('apod:apiKeyChanged', handler as EventListener);
+  }, [date]);
+
+  // Listen for global random trigger (from Header button)
+  useEffect(() => {
+    const onRandom = async () => {
+      const [rand] = await fetchRandom(1);
+      if (rand?.date) {
+        setDate(new Date(rand.date));
+        document.querySelector('section[aria-label="Daily Astronomy Picture"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    };
+    window.addEventListener('apod:random', onRandom as EventListener);
+    return () => window.removeEventListener('apod:random', onRandom as EventListener);
+  }, []);
+
   const changeDay = (delta: number) => {
     const next = new Date(date);
     next.setDate(next.getDate() + delta);
@@ -51,17 +76,17 @@ export const ApodHero = ({ onRandom }: ApodHeroProps) => {
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">NASA APOD — Astronomy Picture of the Day</h1>
               <p className="text-muted-foreground max-w-2xl">Explore the cosmos through NASA's daily imagery. Browse by date, save your favorites, and discover random wonders.</p>
               <div className="flex flex-wrap items-center gap-2">
-                <Button variant="hero" onClick={async () => { const [rand] = await fetchRandom(1); if (rand?.date) setDate(new Date(rand.date)); onRandom?.(); }} aria-label="Random APOD"><RefreshCw /> Random</Button>
-                <Button variant="glass" onClick={() => changeDay(-1)} aria-label="Previous day"><ArrowLeft /> Previous</Button>
-                <Button variant="glass" onClick={() => changeDay(1)} aria-label="Next day" disabled={new Date(toISO(date)) >= new Date(format(new Date(), 'yyyy-MM-dd'))}><ArrowRight /> Next</Button>
-                <DatePicker date={date} onChange={setDate} />
+                <Button variant="hero" onClick={async () => { const [rand] = await fetchRandom(1); if (rand?.date) { setDate(new Date(rand.date)); document.querySelector('section[aria-label=\"Daily Astronomy Picture\"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } onRandom?.(); }} aria-label="Random APOD"><RefreshCw /> Random</Button>
+                <Button variant="glass" onClick={() => { changeDay(-1); document.querySelector('section[aria-label=\"Daily Astronomy Picture\"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} aria-label="Previous day"><ArrowLeft /> Previous</Button>
+                <Button variant="glass" onClick={() => { changeDay(1); document.querySelector('section[aria-label=\"Daily Astronomy Picture\"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} aria-label="Next day" disabled={new Date(toISO(date)) >= new Date(format(new Date(), 'yyyy-MM-dd'))}><ArrowRight /> Next</Button>
+                <DatePicker date={date} onChange={(d) => { setDate(d); document.querySelector('section[aria-label=\"Daily Astronomy Picture\"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} />
               </div>
             </div>
             {item && (
               <div className="w-full md:w-[480px] lg:w-[560px]">
                 <Card className="overflow-hidden bg-card/80 backdrop-blur-sm border-border/60">
                   <CardContent className="p-0">
-                    <div className="relative aspect-video group">
+                    <div key={item.date} className="relative aspect-video group animate-fade-in">
                       {item.media_type === 'image' ? (
                         <img src={item.url} alt={`${item.title} — ${item.date}`} className="h-full w-full object-cover" />
                       ) : (

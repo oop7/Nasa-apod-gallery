@@ -17,7 +17,7 @@ All colors MUST be HSL. */
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 258 80% 50%; /* Cosmic Violet */
+    --primary: 222 88% 48%; /* NASA Blue */
     --primary-foreground: 210 40% 98%;
 
     --secondary: 220 14% 96%;
@@ -26,7 +26,7 @@ All colors MUST be HSL. */
     --muted: 220 14% 96%;
     --muted-foreground: 215 16% 38%;
 
-    --accent: 200 85% 45%; /* Stellar Blue */
+    --accent: 266 80% 64%; /* Nebula Purple */
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84% 60%;
@@ -34,29 +34,32 @@ All colors MUST be HSL. */
 
     --border: 220 13% 90%;
     --input: 220 13% 90%;
-    --ring: 258 80% 50%;
+    --ring: 222 88% 48%;
 
     --radius: 0.9rem;
 
     /* Sidebar (kept for components that use it) */
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 258 80% 50%;
+    --sidebar-primary: 222 88% 48%;
     --sidebar-primary-foreground: 210 40% 98%;
     --sidebar-accent: 220 14% 96%;
     --sidebar-accent-foreground: 222 47% 11%;
     --sidebar-border: 220 13% 90%;
-    --sidebar-ring: 258 80% 50%;
+    --sidebar-ring: 222 88% 48%;
+
+    /* Extra tokens */
+    --primary-glow: 200 90% 60%; /* Electric Cyan */
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
-    --gradient-hero: radial-gradient(1200px 600px at 50% -10%, hsl(260 90% 90% / 0.6), transparent),
-      radial-gradient(800px 400px at 80% 20%, hsl(200 90% 88% / 0.35), transparent),
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%);
+    --gradient-hero: radial-gradient(1200px 600px at 50% -10%, hsl(260 90% 92% / 0.5), transparent),
+      radial-gradient(800px 400px at 80% 20%, hsl(200 90% 90% / 0.35), transparent),
       linear-gradient(180deg, hsl(210 40% 98%), hsl(210 40% 96%));
 
     /* Shadows */
     --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.25);
-    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.35);
+    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.35);
   }
 
   .dark {
@@ -69,7 +72,7 @@ All colors MUST be HSL. */
     --popover: 240 50% 6%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 258 85% 65%;
+    --primary: 222 88% 60%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 228 20% 22%;
@@ -78,7 +81,7 @@ All colors MUST be HSL. */
     --muted: 228 20% 22%;
     --muted-foreground: 215 20% 72%;
 
-    --accent: 200 85% 55%;
+    --accent: 266 80% 64%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62% 30%;
@@ -86,16 +89,16 @@ All colors MUST be HSL. */
 
     --border: 228 20% 22%;
     --input: 228 20% 22%;
-    --ring: 258 85% 65%;
+    --ring: 222 88% 60%;
 
     --sidebar-background: 240 50% 8%;
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 258 85% 65%;
+    --sidebar-primary: 222 88% 60%;
     --sidebar-primary-foreground: 210 40% 98%;
     --sidebar-accent: 228 20% 22%;
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 228 20% 22%;
-    --sidebar-ring: 258 85% 65%;
+    --sidebar-ring: 222 88% 60%;
 
     /* Dark gradient */
     --gradient-hero: radial-gradient(1200px 600px at 50% -10%, hsl(260 60% 18% / 0.6), transparent),
@@ -114,6 +117,28 @@ All colors MUST be HSL. */
     background-image: var(--gradient-hero);
     background-attachment: fixed;
   }
+
+  /* Subtle animated starfield overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(hsl(var(--foreground) / 0.18) 1px, transparent 1px),
+      radial-gradient(hsl(var(--primary-glow) / 0.15) 1px, transparent 1px);
+    background-size: 3px 3px, 2px 2px;
+    background-position: 0 0, 50px 50px;
+    opacity: 0.33;
+    animation: star-drift 60s linear infinite;
+    z-index: 0;
+  }
+
+  @keyframes star-drift {
+    0% { transform: translateY(0px); }
+    100% { transform: translateY(-40px); }
+  }
+
 }
 
 @layer utilities {

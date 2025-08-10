@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import Header from "@/components/Header";
 import { ApodHero } from "@/components/apod/ApodHero";
 import { ApodGallery } from "@/components/apod/ApodGallery";
-import { fetchRandom } from "@/lib/apod";
 
 const Index = () => {
   useEffect(() => {
@@ -12,12 +11,13 @@ const Index = () => {
   }, []);
 
   const handleRandom = async () => {
-    const [rand] = await fetchRandom(1);
-    if (rand?.date) {
-      // Open in a new tab directly (video) or just navigate by hash with date reference in future
-      // For now, scroll to hero and let user see Random via button in hero as visual feedback
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    // Trigger a global random event so ApodHero fetches a new item
+    try {
+      window.dispatchEvent(new Event('apod:random'));
+    } catch {}
+    // Smoothly scroll to hero section
+    const hero = document.querySelector('section[aria-label="Daily Astronomy Picture"]');
+    if (hero) hero.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (

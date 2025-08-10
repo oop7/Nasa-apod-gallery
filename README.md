@@ -81,57 +81,39 @@ npm run preview
 └── vite.config.ts
 ```
 
-## Deployment (GitHub Pages)
-There are two common approaches. For both, set Vite base if deploying to a project repo (not user/organization site).
+## Deployment (Netlify)
+Netlify makes deployment simple and fast. No Vite base path is needed (leave it default).
 
-1) Configure Vite base path (if needed)
-- In vite.config.ts, set base to your repo name:
-```ts
-export default defineConfig({
-  base: "/<REPO_NAME>/",
-  // ...rest of config
-});
-```
+### Option A — Deploy via Netlify UI
+1. Push your repo to GitHub/GitLab/Bitbucket
+2. In Netlify, click “Add new site” → “Import an existing project”
+3. Select your repo
+4. Build settings:
+   - Build command: `npm run build`
+   - Publish directory: `dist`
+   - Node version: 20 (Site settings → Build & deploy → Environment)
+5. Deploy
 
-2) Deploy with GitHub Actions (recommended)
-- Create .github/workflows/deploy.yml with a Pages workflow, for example:
-```yml
-name: Deploy to GitHub Pages
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
-      - run: npm ci
-      - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./dist
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
-```
-- In your repo: Settings → Pages → Source: GitHub Actions.
+### Option B — Deploy via Netlify CLI
+- Install CLI: `npm i -g netlify-cli`
+- Login: `netlify login`
+- Init (first time): `netlify init`
+- Build & deploy: `npm run build && netlify deploy --prod --dir=dist`
 
-3) Manual gh-pages branch (alternative)
-- Build locally: `npm run build`
-- Push the contents of dist/ to a gh-pages branch and enable Pages from that branch.
+### SPA Routing & Caching
+This repo includes `netlify.toml` to:
+- Redirect all routes to `/index.html` (prevents 404 on refresh)
+- Cache hashed assets aggressively
+- Prevent caching of HTML and `sw.js`
+
+### Environment / Secrets
+- NASA API key entry is handled in-app via Settings and stored in localStorage (no build-time env needed).
+- If you later add env vars, set them in Netlify → Site settings → Environment.
+
+### Post-deploy checklist
+- Deep links work (client-side routing fallback)
+- Images/videos load; offline caching works (service worker)
+- Theme toggle persists; Lighthouse scores are solid
 
 ## Accessibility
 - Semantic HTML, labeled controls, aria-attributes for dialogs
@@ -149,7 +131,7 @@ Issues and PRs are welcome! Please:
 - Adhere to existing code style
 
 ## License
-MIT ©oop7. See LICENSE if you add one.
+MIT © Your Name. See LICENSE if you add one.
 
 ## Acknowledgements
 - NASA APOD: https://apod.nasa.gov/

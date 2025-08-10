@@ -20,6 +20,12 @@ export function getApiKey(): string {
 
 export function setApiKey(key: string) {
   localStorage.setItem(LS_API_KEY, key);
+  // Notify app to re-fetch with the new key (no full reload needed)
+  try {
+    window.dispatchEvent(new Event('apod:apiKeyChanged'));
+  } catch {
+    // noop for SSR/non-browser
+  }
 }
 
 function withParams(params: Record<string, string | number | boolean | undefined>): string {
