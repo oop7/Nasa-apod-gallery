@@ -1,0 +1,153 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here.
+All colors MUST be HSL. */
+
+@layer base {
+  :root {
+    /* Light space theme */
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 258 80% 50%; /* Cosmic Violet */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 215 16% 38%;
+
+    --accent: 200 85% 45%; /* Stellar Blue */
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 13% 90%;
+    --input: 220 13% 90%;
+    --ring: 258 80% 50%;
+
+    --radius: 0.9rem;
+
+    /* Sidebar (kept for components that use it) */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 258 80% 50%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 220 14% 96%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 220 13% 90%;
+    --sidebar-ring: 258 80% 50%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+    --gradient-hero: radial-gradient(1200px 600px at 50% -10%, hsl(260 90% 90% / 0.6), transparent),
+      radial-gradient(800px 400px at 80% 20%, hsl(200 90% 88% / 0.35), transparent),
+      linear-gradient(180deg, hsl(210 40% 98%), hsl(210 40% 96%));
+
+    /* Shadows */
+    --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.25);
+    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.35);
+  }
+
+  .dark {
+    --background: 240 50% 6%;
+    --foreground: 210 40% 98%;
+
+    --card: 240 50% 8%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 240 50% 6%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 258 85% 65%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 228 20% 22%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 228 20% 22%;
+    --muted-foreground: 215 20% 72%;
+
+    --accent: 200 85% 55%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 228 20% 22%;
+    --input: 228 20% 22%;
+    --ring: 258 85% 65%;
+
+    --sidebar-background: 240 50% 8%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 258 85% 65%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 228 20% 22%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 228 20% 22%;
+    --sidebar-ring: 258 85% 65%;
+
+    /* Dark gradient */
+    --gradient-hero: radial-gradient(1200px 600px at 50% -10%, hsl(260 60% 18% / 0.6), transparent),
+      radial-gradient(800px 400px at 80% 20%, hsl(200 80% 20% / 0.35), transparent),
+      linear-gradient(180deg, hsl(240 50% 6%), hsl(258 40% 10%));
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    background-image: var(--gradient-hero);
+    background-attachment: fixed;
+  }
+}
+
+@layer utilities {
+  .bg-gradient-primary {
+    background-image: var(--gradient-primary);
+  }
+  .bg-hero {
+    background-image: var(--gradient-hero);
+  }
+  .shadow-elegant { box-shadow: var(--shadow-elegant); }
+  .shadow-glow { box-shadow: var(--shadow-glow); }
+
+  /* Animation Utilities from design context */
+  .story-link {
+    position: relative;
+    display: inline-block;
+  }
+  .story-link::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background: hsl(var(--primary));
+    transform-origin: bottom right;
+    transition: transform 0.3s ease;
+  }
+  .story-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
+
+  .hover-scale { @apply transition-transform duration-200 hover:scale-105; }
+  .pulse { animation: pulse 2s cubic-bezier(0.4,0,0.6,1) infinite; }
+}

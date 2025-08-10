@@ -1,58 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NASA APOD Gallery</title>
-  <meta name="description" content="Browse NASA's Astronomy Picture of the Day collection with an elegant, modern interface">
-  <meta name="theme-color" content="#4299e1">
-  
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="manifest.json">
-  
-  <!-- Apple Touch Icons -->
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Cpath fill='%234299e1' d='M96 8C43 8 8 43 8 96s35 88 88 88 88-35 88-88S149 8 96 8zm0 144c-31 0-56-25-56-56s25-56 56-56 56 25 56 56-25 56-56 56z'/%3E%3C/svg%3E">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="APOD Gallery">
-  
-  <!-- External Resources -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="style.css?v=2025073103&t=1722441600">
-</head>
-<body>
-    <div class="container">
-      <div class="api-notice" style="display: none;">
-        <p><strong>Note:</strong> This demo uses NASA's rate-limited DEMO_KEY. For unlimited access, get your free API key from <a href="https://api.nasa.gov/" target="_blank">api.nasa.gov</a></p>
-      </div>
-      <div class="search-controls">
-        <input type="text" id="search-input" placeholder="Search images by title or description..." class="search-input">
-        <div class="date-controls">
-          <input type="date" id="start-date">
-          <input type="date" id="end-date">
-        </div>
-        <div class="action-buttons">
-          <button id="fetch-pictures" class="button-36" role="button">Fetch Pictures</button>
-          <button id="clear-results" class="button-36" role="button">Clear Results</button>
-          <button id="show-favorites" class="button-36" role="button">Show Favorites</button>
-        </div>
-      </div>
-      <div id="error-message" class="error-message"></div>
-      <div id="loading" class="loading">Loading...</div>
-    </div>
-  
-  <div id="apod-container"></div>
-  
-  <!-- Modal for displaying the large image -->
-  <div id="modal" class="modal">
-    <span id="modal-close" class="modal-close">&times;</span>
-    <img id="modal-img" src="" alt="">
-  </div>
-  
-  <footer>
-    <p>Powered by NASA's APOD API | &copy; 2025 NASA APOD Viewer</p>
-  </footer>
-  
-  <script src="script.js?v=2025073103&t=1722441600"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NASA APOD Explorer | Daily Astronomy Picture</title>
+    <meta name="description" content="Explore NASA's Astronomy Picture of the Day. Browse by date, save favorites, and discover random cosmic wonders." />
+    <link rel="canonical" href="/" />
+    <meta name="author" content="Lovable" />
+
+    <meta property="og:title" content="NASA APOD Explorer" />
+    <meta property="og:description" content="Discover stunning space imagery from NASA's APOD with a sleek, interactive experience." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@lovable_dev" />
+    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "NASA APOD Explorer",
+        "url": "/",
+        "description": "Explore NASA's Astronomy Picture of the Day with date browsing, favorites, and random discoveries.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "/?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
